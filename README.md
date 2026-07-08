@@ -79,3 +79,31 @@ npm run lint
 3. Actions 탭에서 기본 브랜치의 `Deploy to GitHub Pages`가 성공했는지 확인합니다.
 4. Vite는 GitHub Actions 환경에서 자동으로 `/<repository-name>/` base path를 사용합니다. 예: `https://<owner>.github.io/Insurance_chat_test/`.
 5. 배포 URL은 Actions 실행 결과의 `github-pages` environment URL에서 확인합니다.
+
+## 14. 엑셀/HTML Table 상품 데이터 가공 구조
+업로드 ZIP 또는 원천 `.xls` 파일이 제공되는 경우 확장자는 `.xls`여도 내부가 Microsoft Excel HTML Table일 수 있으므로, `openpyxl` 단독 처리보다 HTML table parser 방식으로 row를 추출하는 전처리를 권장합니다. 현재 저장소에는 ZIP/XLS 원천 파일이 포함되어 있지 않아, 본 구현은 요청서의 `rawProductSeed`를 `src/data/products.ts`에서 파싱해 `InsuranceProduct[]` seed data로 변환합니다.
+
+생성된 상품 데이터는 다음 구조를 따릅니다.
+- `src/types/product.ts`: `InsuranceCategory`, `SourceKind`, `InsuranceProduct` 타입 정의와 기존 UI 호환용 `Product` 타입
+- `src/data/products.ts`: `rawProductSeed` 파싱, `insuranceProducts`, `featuredProducts`, `demoProducts`, 기존 화면용 `products` 변환 데이터
+- `src/data/productCategories.ts`: 화면 필터용 보험 카테고리 목록
+- `src/utils/productClassifier.ts`: 상품명/급부 키워드 기반 카테고리·sourceKind·tag 생성
+- `src/utils/productScoring.ts`: 상품명/급부 키워드 기반 mock scoring, 추천 고객, 영업 포인트, 주의사항 생성
+
+## 15. 상품 분류 기준
+상품 카테고리는 상품명, 급부명칭, 지급사유에 포함된 키워드를 우선 적용합니다.
+- 종신보험: 종신, 상속, 사망보험금, H종신, 제로백
+- 정기보험: 정기, 경영인정기, e정기, 정기사망
+- 질병/건강보험: 건강, 질병, 수술, 입원, 뇌혈관, 허혈성심장질환, 심근경색, 뇌출혈
+- 암보험: 암, 항암, 암진단, 암수술, 암주요치료, 유사암, 고액암
+- CI/GI보험: CI, GI, 중대한, 선지급, 라이프케어, 미리받는, 진단보험금
+- 간병/치매보험: 간병, 치매, 장기요양, LTC, 요양병원
+- 상해보험: 상해, 재해, 골절, 교통재해, 레저, 장해
+- 연금/저축/변액보험: 연금, 연금저축, 저축, 목돈마련, 변액, 유니버셜, 적립 등
+
+변액 상품은 `변액종신보험`, `변액정기보험`, `변액저축보험`, `변액연금보험`처럼 category에 변액 속성을 유지하고, tags에도 `변액`, `유니버셜`, `저축/연금` 키워드를 남겨 비교·추천 화면에서 함께 활용할 수 있게 했습니다.
+
+## 16. 상품 점수 산정 방식
+엑셀 원천에 정량 점수가 없다는 전제에서 `src/utils/productScoring.ts`가 키워드 기반 mock scoring을 생성합니다. 예를 들어 사망/종신/정기/상속 키워드는 `deathProtection`, 암/항암/유사암 키워드는 `cancerProtection`, 간병/치매/LTC 키워드는 `nursingCare`, 연금/저축/적립 키워드는 `pension`, `savings`, `refundCompetitiveness`에 반영됩니다.
+
+한화생명 상품은 `consultingUsability`와 `hanwhaStrategicFit`에 소폭 가중치를 주지만, 추천 엔진에서는 고객 니즈와 상품군 적합도를 함께 계산하므로 타사 상품이 더 적합하면 상위 추천이 가능합니다. 모든 상품에는 공통 주의사항으로 “실제 가입 전 상품설명서와 약관 확인 필요” 문구를 포함합니다.

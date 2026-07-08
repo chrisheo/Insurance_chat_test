@@ -1,49 +1,70 @@
-import type {Product} from '../types/product';
-const profile=(category:Product['category'])=>({
-  '종신보험':{summary:'평생 사망보장과 가족 생계보장, 상속 재원 상담에 활용하는 보장성 상품',strengths:['사망보장 중심 설계','가족·상속 상담 연결'],weaknesses:['보험료 부담이 정기보험보다 클 수 있음','저축/연금 목적 설명 주의'],recommendedFor:['배우자·자녀 부양 고객','상속/자산이전 관심 고객'],talkingPoints:['사망보험금의 가족 생활자금 역할 설명','보장성보험이라는 점을 명확히 안내']},
-  '정기보험':{summary:'필요한 기간 동안 사망보장을 확보해 보험료 부담을 낮추는 상품',strengths:['보험료 경쟁력','자녀 독립 전 집중 보장'],weaknesses:['종신보장이 아님','만기 이후 보장 공백 가능'],recommendedFor:['보험료 민감한 가장','자녀 성장기 가족'],talkingPoints:['필요 기간만 집중 보장','종신보험과 비용 대비 효과 비교']},
-  '건강보험':{summary:'암·뇌·심 등 주요 질병과 치료비 리스크를 폭넓게 대비하는 상품',strengths:['3대질병 보완','보장 리모델링 활용'],weaknesses:['특약 구성에 따라 보장 차이 큼','기존 보험과 중복 확인 필요'],recommendedFor:['건강검진 이상소견 고객','실손만 보유한 고객'],talkingPoints:['진단비와 치료비 공백 구분','납입면제 조건 확인']},
-  '암보험':{summary:'암 진단·치료 과정의 경제적 부담을 중심으로 설명하는 특화 상품',strengths:['암보장 집중','고객 이해도 높음'],weaknesses:['암 외 질병 보장은 제한적','소액암/유사암 조건 확인 필요'],recommendedFor:['암 가족력 고객','암보장 첫 가입 고객'],talkingPoints:['진단 이후 치료·생활비 흐름 설명','건강보험과 역할 분리']},
-  '간병보험':{summary:'장기요양·간병비·부모부양 리스크를 상담하는 노후 돌봄 상품',strengths:['간병비 부담 환기','부모부양 상담 적합'],weaknesses:['연령 상승 시 보험료 부담','지급 조건 설명 필요'],recommendedFor:['부모부양 고객','50대 이상 고객'],talkingPoints:['가족 돌봄 부담을 비용으로 환산','치매보험과 비교']},
-  '치매보험':{summary:'치매 진단 단계와 장기 돌봄 리스크를 중심으로 준비하는 상품',strengths:['치매 리스크 특화','노후 상담 설득력'],weaknesses:['진단 단계별 지급 조건 복잡','간병보험과 중복 확인'],recommendedFor:['치매 가족력 고객','노후 간병 걱정 고객'],talkingPoints:['치매 단계별 보장 구조 확인','간병/생활비 관점 상담']},
-  '연금보험':{summary:'은퇴 이후 현금흐름과 장기 노후자금 준비를 위한 상품',strengths:['노후 현금흐름','장기 유지 설계'],weaknesses:['중도해지 손실 가능','보장성보험과 목적 다름'],recommendedFor:['은퇴준비 고객','안정적 연금 선호 고객'],talkingPoints:['월 생활비 관점으로 설명','종신보험 연금전환과 비교']},
-  '저축보험':{summary:'목돈 마련과 장기 저축 목적을 상담하는 저축성 상품',strengths:['목돈 마련 메시지','자금 계획 수립'],weaknesses:['보장 기능 제한','금리/환급 조건 확인 필요'],recommendedFor:['목돈 마련 고객','저축성 선호 고객'],talkingPoints:['보장과 저축 목적 분리','중도해지 환급 설명']},
-  '어린이보험':{summary:'자녀 성장기 질병·상해 리스크와 부모의 보장 공백을 함께 점검하는 상품',strengths:['자녀 보장 특화','부모 상담 진입 용이'],weaknesses:['연령/담보 제한 확인','성인 보장과 범위 다름'],recommendedFor:['미성년 자녀 부모','출산/입학 고객'],talkingPoints:['성장기 위험과 의료비 부담 설명','부모 보장과 함께 점검']},
-  '운전자보험':{summary:'운전 중 사고·벌금·변호사비용 등 생활 리스크를 보완하는 상품',strengths:['일상 리스크 보완','보험료 부담 낮음'],weaknesses:['생명보험 핵심 보장과 목적 다름','특약별 한도 확인'],recommendedFor:['운전 빈도 높은 고객','영업직 고객'],talkingPoints:['자동차보험과 역할 차이 설명','생활 리스크 보완']}} as const)[category];
+import type {InsuranceProduct,Product} from '../types/product';
+import {classifyProduct,sourceKindFor,tagsFor} from '../utils/productClassifier';
+import {cautionPointsFor,salesPointsFor,scoreInsuranceProduct,targetCustomersFor} from '../utils/productScoring';
 
-const companyPosition:Record<Product['insurer'],{focus:string;extraStrength:string;caution:string}>={
-  '한화생명':{focus:'고객 니즈와 상담 흐름을 연결하는 한화 전략상품 포지셔닝',extraStrength:'한화생명 상담 포인트와 생애주기 설명',caution:'한화 강조는 고객 니즈와 맞을 때만 제시'},
-  '삼성생명':{focus:'브랜드 신뢰와 표준화된 보장 구조를 강조하는 대안',extraStrength:'인지도와 상품군 폭',caution:'상담 포인트가 가격 중심으로 흐르지 않게 주의'},
-  '교보생명':{focus:'가족보장과 장기 유지 관점의 안정형 대안',extraStrength:'장기보장 설명과 공시자료 기반 비교',caution:'상품별 세부 조건 확인 필요'},
-  '신한라이프':{focus:'디지털/간편 상담과 합리적 보장 구성을 강조하는 대안',extraStrength:'간편 비교와 디지털 보험 메시지',caution:'간편가입 조건과 보장 제한 확인'},
-  '동양생명':{focus:'보험료와 체증형 구조를 비교하기 좋은 보완 대안',extraStrength:'체증형 보장 비교 포인트',caution:'공식 상품공시 재확인 필요'},
-  '미래에셋생명':{focus:'연금·변액·노후자산 활용 관점의 대안',extraStrength:'노후자금과 투자형 상품 비교',caution:'수익률/원금손실 가능성 안내 필요'},
-  'ABL생명':{focus:'평생보장과 종신보험 대안 비교용 포지션',extraStrength:'종신보험 구조 비교',caution:'세부 특약과 환급 구조 확인'},
-  'DB생명':{focus:'건강보장과 보험료 경쟁력 비교용 대안',extraStrength:'건강맞춤형 보장 비교',caution:'생명보험/손해보험 보장 역할 구분'}
-};
-const base=(id:string,insurer:Product['insurer'],name:string,category:Product['category'],scores:number[],strategic=false):Product=>{const pr=profile(category);const cp=companyPosition[insurer];return {id,insurer,name,category,summary:`${pr.summary}. ${cp.focus}.`,monthlyPremium:scores[0]*1800+35000,ageRange:category==='연금보험'?'30~70세':category==='어린이보험'?'0~30세':'20~65세',paymentPeriod:category==='정기보험'?'10/20년납':category==='연금보험'?'5/10/20년납':'10/20/30년납',coveragePeriod:category.includes('연금')?'종신 연금':category==='정기보험'?'10/20/30년 만기':'80세/100세/종신',deathScore:scores[1],healthScore:scores[2],criticalScore:scores[3],careScore:scores[4],pensionScore:scores[5],refundScore:scores[6],priceScore:scores[7],waiverScore:scores[8],clarityScore:scores[9],consultingScore:scores[10],hanwhaStrategic:strategic,strengths:[...pr.strengths,cp.extraStrength],weaknesses:[...pr.weaknesses,cp.caution],recommendedFor:[...pr.recommendedFor],talkingPoints:[...pr.talkingPoints,cp.focus],differentiator:insurer==='한화생명'?`한화생명 ${category}은 ${cp.extraStrength}를 중심으로 고객 니즈와 연결`: `${insurer} ${category}은 ${cp.focus}`};};
-export const products:Product[]=[
-base('p1','한화생명','한화생명 H종신보험','종신보험',[54,92,78,82,45,74,70,66,88,84,93],true),
-base('p2','한화생명','한화생명 The든든 건강보험','건강보험',[38,45,91,88,58,40,62,78,90,88,94],true),
-base('p3','한화생명','한화생명 암플러스 건강보험','암보험',[34,35,86,94,42,30,58,82,87,90,92],true),
-base('p4','한화생명','한화생명 간병든든 보험','간병보험',[43,42,72,65,94,50,56,71,80,82,89],true),
-base('p5','한화생명','한화생명 스마트 연금보험','연금보험',[47,30,38,28,35,93,84,68,45,86,88],true),
-base('p6','삼성생명','삼성생명 체증형 종신보험','종신보험',[58,95,68,72,38,66,75,59,82,78,84]),
-base('p7','삼성생명','삼성생명 건강종합보험','건강보험',[41,40,93,90,55,35,60,74,86,76,82]),
-base('p8','교보생명','교보생명 평생든든종신보험','종신보험',[51,89,74,70,40,72,79,64,84,80,81]),
-base('p9','교보생명','교보생명 암케어보험','암보험',[33,28,82,96,36,25,54,85,81,83,80]),
-base('p10','신한라이프','신한라이프 세븐Plus 종신보험','종신보험',[49,86,76,74,41,68,73,70,83,79,82]),
-base('p11','신한라이프','신한라이프 더드림 건강보험','건강보험',[36,32,89,87,52,32,57,88,79,78,79]),
-base('p12','동양생명','동양생명 수호천사 체증형 종신보험','종신보험',[45,88,62,66,34,64,69,80,74,72,76]),
-base('p13','미래에셋생명','미래에셋생명 변액연금보험','연금보험',[62,25,30,20,28,96,91,52,35,70,73]),
-base('p14','ABL생명','ABL생명 평생보장 종신보험','종신보험',[44,84,70,65,38,69,72,76,77,74,75]),
-base('p15','DB생명','DB생명 건강맞춤보험','건강보험',[31,30,84,86,50,28,52,92,76,77,78]),
-base('p16','삼성생명','삼성생명 실속 정기보험','정기보험',[22,80,35,30,20,15,20,95,40,88,70]),
-base('p17','교보생명','교보생명 시니어 간병보험','간병보험',[39,25,68,55,91,35,48,79,72,75,77]),
-base('p18','신한라이프','신한라이프 치매안심보험','치매보험',[37,18,60,48,92,30,46,81,70,73,74]),
-base('p19','미래에셋생명','미래에셋생명 글로벌저축보험','저축보험',[55,15,22,18,20,84,95,58,25,69,72]),
-base('p20','DB생명','DB생명 아이사랑 어린이보험','어린이보험',[29,20,88,85,35,20,50,90,85,87,81]),
-base('p21','동양생명','동양생명 운전자안심보험','운전자보험',[12,10,35,30,20,10,30,96,40,91,68]),
-base('p22','한화생명','한화생명 라이프플러스 정기보험','정기보험',[25,82,42,38,22,18,34,91,52,89,83],true)
-];
+export const rawProductSeed=`company|category|productName|mainBenefits|premiumMale|premiumFemale|hanwhaPriority
+한화생명|종신보험|한화생명 H종신보험 무배당[2종 3대질병납입면제형](해약환급금 일부지급형Ⅰ)|사망보험금|2566000 원|2,471,000 원|high
+한화생명|종신보험|한화생명 H종신보험 무배당[1종 기본납입면제형](해약환급금 일부지급형Ⅰ)|사망보험금, 9대질병보험료납입면제특약|2521000 원|2,424,000 원|high
+한화생명|종신보험|한화생명 제로백H종신보험 무배당|사망보험금, 9대질병보험료납입면제특약|798000 원|767,000 원|high
+한화생명|종신보험|한화생명 상속H종신보험 무배당|사망보험금|159900 원|139,425 원|high
+한화생명|CI/GI보험|한화생명 하나로H종신보험 무배당|사망보험금, 12대질병보험료납입면제특약, 12대질병케어특약|1178000 원|1,120,000 원|high
+한화생명|정기보험|한화생명 e정기보험 무배당[순수보장형]|사망보험금|16000 원|8,400 원|medium
+한화생명|정기보험|한화생명 경영인H정기보험 무배당_2종(10%체증형, 해약환급금 일부지급형)|사망보험금|409000 원|278,000 원|high
+한화생명|암보험|한화생명 H건강플러스보험 무배당(해약환급금 일부지급형)[일반가입형Ⅰ]|3대질병 사망보험금, 암주요치료보장특약, 사망보험금|132900 원|122,700 원|high
+한화생명|암보험|한화생명 Need AI 암보험 무배당|암사망보험금, 암주요치료보장N특약, 사망보험금|8340 원|7,020 원|high
+한화생명|암보험|한화생명 e암보험(비갱신형) 무배당(표준체형)|특정 고액치료비관련 암진단자금, 암진단자금, 중증 갑상선암 진단자금|33150 원|25,350 원|medium
+한화생명|질병/건강보험|한화생명 걸음e건강보험 무배당|뇌혈관질환진단, 허혈성심장질환진단, 암진단|12920 원|12,180 원|medium
+한화생명|간병/치매보험|한화생명 H간병보험 무배당 [일반가입]|사망보험금, 간병인지원금특약, 요양병원제외 간병보장|6900 원|4,750 원|high
+한화생명|상해보험|한화생명 스마트H상해보험 무배당|재해사망보험금, 고도장해보험금|2611100 원|1,964,100 원|medium
+한화생명|상해보험|한화생명 포켓골절보험 무배당|재해골절진단자금|1177 원|852 원|medium
+한화생명|연금저축보험|한화생명 e연금저축보험 무배당|연금저축, 계약자적립액, 해약환급금|3,435,428 원||medium
+한화생명|저축보험|WE CARE DREAM 저축보험 무배당|저축, 계약자적립액, 해약환급금|3,617,188 원||medium
+한화생명|저축보험|한화생명 2030 목돈마련 디딤돌저축보험 무배당|저축, 목돈마련, 계약자적립액|3,650,674 원||medium
+삼성생명|종신보험|삼성 암치료플러스종신보험(2605)(무배당,저해약환급금형)|사망보험금Ⅰ, 사망보험금Ⅱ, 항암약물치료보험금|554000 원|499,000 원|none
+교보생명|종신보험|교보간편K-실속종신보험 [D](무배당)|재해사망보험금, 질병사망보험금, 사망보험금|463000 원|441,000 원|none
+신한라이프생명|종신보험|신한(간편가입)종신보험 드림UP(무배당, 해약환급금 일부지급형)|사망보험금, 보험료납입면제특약|1596800 원|1,582,900 원|none
+ABL생명|종신보험|(무)우리WON세븐종신보험(해약환급금 일부지급형Ⅱ) [일반심사형]|사망보험금, 증액사망보험금, 6대질병보험료납입면제특약|1375000 원|1,255,000 원|none
+동양생명|종신보험|(무)우리WON하는7배더행복한플러스종신보험(간편심사형)|사망보험금|1918400 원|1,708,400 원|none
+메트라이프생명|종신보험|무배당 모두의 종신보험(무해약환급금형)_체증형|사망보험금, 암사망특약, 재해사망특약|305000 원|284,000 원|none
+미래에셋생명|변액종신보험|미래에셋생명 변액종신보험 무배당 미담|사망보험금, 납입면제특약, 변액종신|546,000 원|506,000 원|none
+메트라이프생명|변액종신보험|무배당 변액유니버셜 모두의상속종신보험|사망보험금, 뇌출혈진단특약, 암수술특약|177,400 원|158,400 원|none
+삼성생명|정기보험|삼성 내리사랑정기보험(2501)(무배당,순수보장형)|사망보험금|23000 원|16,000 원|none
+교보생명|정기보험|교보간편경영인정기보험 [2501](무배당)|사망보험금, 재해장해납입면제특약|360000 원|288,000 원|none
+신한라이프생명|정기보험|신한SOL정기보험(무배당)|사망보험금|14400 원|7,900 원|none
+KB라이프생명|정기보험|KB 착한정기보험Ⅱ 무배당|사망보험금|16100 원|9,000 원|none
+미래에셋생명|변액정기보험|미래에셋생명 헤리티지 변액정기보험 무배당 [일반가입형]|사망보험금, 체증형 정기보장|577,000 원|330,000 원|none
+삼성생명|암보험|삼성 가족대표건강보험(2605)(무배당,무해약환급금형)_3종(간편고지형)|사망보험금, 암진단특약, 뇌혈관질환진단특약|18500 원|15,400 원|none
+교보생명|암보험|교보간편암평생보장보험 (무배당)|사망보험금, 암진단보너스 진단보험금, 사망보장증액보너스|400000 원|384,000 원|none
+신한라이프생명|암보험|신한(간편가입)통합건강보험 원(ONE)(무배당, 해약환급금 미지급형)|사망보험금, 암진단특약, 남녀특정암진단|12432 원|11,444 원|none
+ABL생명|암보험|(무)우리WON더담은암보험(해약환급금 미지급형)(간편심사형)|사망보험금, 일반암진단특약, 소액암진단특약|7260 원|6,150 원|none
+동양생명|암보험|(무)우리WON하는암보험(해약환급금 미지급형)|사망보험금, 기타피부암·갑상선암 주요치료비, 암 주요치료비|2030 원|1,692 원|none
+삼성생명|질병/건강보험|삼성 인터넷 뇌심건강보험(2505)(갱신형,무배당)|사망보험금, 2대질병 주요검사비, 혈관조영술검사비|210 원|130 원|none
+교보생명|질병/건강보험|교보뇌·심장보험(무배당)_만기환급형|사망보험금, 만기환급금, 뇌출혈 및 급성심근경색 진단보장|53820 원|35,280 원|none
+신한라이프생명|질병/건강보험|신한통합건강보험 슈퍼원(ONE)(무배당, 해약환급금 미지급형)|사망보험금, 뇌혈관질환진단특약, 질병수술특약|11544 원|10,720 원|none
+DB생명|질병/건강보험|(무)e로운 뇌혈관질환보장보험(해약환급금 미지급형)(2601)|뇌혈관질환 진단자금, 수술급여금, 입원급여금|23000 원|20,600 원|none
+교보생명|간병/치매보험|교보암·간병평생보장보험 (무배당)|사망보험금, 암/LTC진단보너스, 사망보장증액보너스|355000 원|335,000 원|none
+동양생명|간병/치매보험|(무)우리WON하는치매간병보험(해약환급금 미지급형Ⅲ)|사망보험금, 경도이상치매보장, 중등도이상치매보장|2134 원|1,846 원|none
+미래에셋생명|간병/치매보험|M-케어 치매간병보험 무배당 일반가입형 [기본형]|사망보험금, 치매진단특약, 월지급형 치매진단특약|25500 원|22,270 원|none
+삼성생명|상해보험|삼성 s교통상해보험(2501)(무배당)|교통재해사망보험금, 자동차탑승중교통재해사망, 대중교통사고사망|5700 원|3,300 원|none
+NH농협생명|상해보험|ESG쏘옥NHe대중교통보험(무배당)|대중교통재해 사망보험금, 기타교통재해 사망보험금|||none
+삼성생명|연금저축보험|삼성 연금저축골드연금보험(2601)(무배당)|연금저축, 계약자적립액, 해약환급금|3,309,060 원||none
+교보생명|연금저축보험|교보e연금저축보험|연금저축, 계약자적립액, 해약환급금|3,618,489 원||none
+신한라이프생명|연금저축보험|신한VIP참연금저축보험Ⅲ|연금저축, 계약자적립액, 해약환급금|3,404,895 원||none
+KDB생명|연금저축보험|e원금보장 KDB하이브리드연금저축보험(무)|연금저축, 원금보장, 계약자적립액|3,630,735 원||none
+삼성생명|저축보험|삼성 스마트저축보험(2601)(무배당)|저축, 계약자적립액, 해약환급금|49,792,040 원||none
+교보생명|저축보험|교보청년저축보험(무배당)|청년저축, 계약자적립액, 해약환급금|3,650,987 원||none
+신한라이프생명|저축보험|신한The안심VIP저축보험Ⅲ(무배당)|VIP저축, 계약자적립액, 해약환급금|50,816,874 원||none
+DB생명|저축보험|(무)e로운 DB저축보험(2404)|저축, 계약자적립액, 해약환급금|3,607,762 원||none
+미래에셋생명|변액저축보험|미래에셋생명 변액저축보험 (무) 2504|변액저축, 계약자적립액, 해약환급금|3,449,473 원||none
+신한라이프생명|변액저축보험|신한모으고키우는변액적립보험v2.0(무배당)|변액적립, 계약자적립액, 해약환급금|3,344,147 원||none
+메트라이프생명|변액저축보험|무배당 키즈드림변액유니버셜보험|키즈드림, 변액유니버셜, 저축|3,316,426 원||none`;
+
+type SeedRow={company:string;category:string;productName:string;mainBenefits:string;premiumMale:string;premiumFemale:string;hanwhaPriority:InsuranceProduct['hanwhaPriority']};
+const parseSeed=():SeedRow[]=>rawProductSeed.trim().split('\n').slice(1).map(line=>{const [company,category,productName,mainBenefits,premiumMale,premiumFemale,hanwhaPriority]=line.split('|');return{company,category,productName,mainBenefits,premiumMale,premiumFemale,hanwhaPriority:(hanwhaPriority||'none') as InsuranceProduct['hanwhaPriority']}});
+const slug=(s:string)=>s.replace(/[^가-힣a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60);
+export const insuranceProducts:InsuranceProduct[]=parseSeed().map((row,index)=>{const mainBenefits=row.mainBenefits.split(',').map(x=>x.trim()).filter(Boolean);const category=classifyProduct(row.productName,row.category);const base={id:`ip-${index+1}-${slug(row.company)}-${slug(row.productName)}`,company:row.company,productName:row.productName,category,sourceKind:sourceKindFor(category),sourceFile:`${sourceKindFor(category)}_상품비교_seed.xls`,mainBenefits,premiumMale:row.premiumMale||undefined,premiumFemale:row.premiumFemale||undefined,tags:tagsFor(row.company,category,row.productName,mainBenefits),targetCustomers:targetCustomersFor(category),salesPoints:salesPointsFor(row.company,category,mainBenefits),cautionPoints:cautionPointsFor(category),isHanwha:row.company==='한화생명',hanwhaPriority:row.hanwhaPriority,scores:{} as InsuranceProduct['scores']};return{...base,scores:scoreInsuranceProduct(base)}});
+export const featuredProducts=insuranceProducts.filter(p=>p.isHanwha||p.hanwhaPriority!=='none');
+export const demoProducts=insuranceProducts;
+const num=(v?:string)=>Number((v||'').replace(/[^0-9]/g,''))||50000;
+export const products:Product[]=insuranceProducts.map(p=>({id:p.id,insurer:p.company,name:p.productName,category:p.category,summary:`${p.company} ${p.category}: ${p.mainBenefits.slice(0,3).join(', ')} 중심 상품`,monthlyPremium:num(p.premiumMale),ageRange:p.category.includes('연금')||p.category.includes('저축')?'20~70세':'20~65세',paymentPeriod:p.category.includes('저축')||p.category.includes('연금')?'5/10/20년납':'10/20/30년납',coveragePeriod:p.category.includes('정기')?'정해진 기간':p.category.includes('연금')?'연금개시 후':'80세/100세/종신',deathScore:p.scores.deathProtection,healthScore:p.scores.healthProtection,criticalScore:Math.max(p.scores.cancerProtection,p.scores.ciGiProtection),careScore:p.scores.nursingCare,pensionScore:p.scores.pension,refundScore:p.scores.refundCompetitiveness,priceScore:p.scores.premiumCompetitiveness,waiverScore:p.tags.includes('납입면제')?82:45,clarityScore:p.scores.consultingUsability,consultingScore:p.scores.consultingUsability,hanwhaStrategic:p.isHanwha,strengths:p.salesPoints,weaknesses:p.cautionPoints,recommendedFor:p.targetCustomers,talkingPoints:p.salesPoints,differentiator:p.isHanwha?'한화 상담 포인트와 전략상품 badge로 고객 니즈 연결 가능':'타사 상품 강점을 인정하고 한화생명 대안과 함께 비교 가능',sourceKind:p.sourceKind,sourceFile:p.sourceFile,premiumMale:p.premiumMale,premiumFemale:p.premiumFemale,raw:p}));
 export const categories=[...new Set(products.map(p=>p.category))];export const insurers=[...new Set(products.map(p=>p.insurer))];

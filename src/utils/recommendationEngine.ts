@@ -3,10 +3,10 @@ export const views:RecommendationView[]=['보장 강화','보험료 절감','가
 function has(text:string,words:string[]){return words.some(w=>text.includes(w));}
 export function scoreProduct(c:Customer,p:Product,view:RecommendationView){const text=[...c.healthIssues,...c.recentEvents,...c.interests,c.family,c.memo,...c.existingPolicies].join(' ');let s=p.consultingScore*.16+p.clarityScore*.08;const onlySilson=c.existingPolicies.length===1&&c.existingPolicies[0].includes('실손');
  if(c.hasChildren||has(text,['배우자','자녀','가장']))s+=p.deathScore*((p.category==='종신보험'||p.category==='정기보험')?0.38:0.16);
- if(has(text,['건강','검진','질병','고혈압','당뇨','결절','디스크']))s+=(p.healthScore+p.criticalScore)*(p.category==='건강보험'?0.24:0.11);
+ if(has(text,['건강','검진','질병','고혈압','당뇨','결절','디스크']))s+=(p.healthScore+p.criticalScore)*(p.category==='질병/건강보험'?0.24:0.11);
  if(has(text,['암','가족력']))s+=p.criticalScore*(p.category==='암보험'?0.36:0.16);
- if(has(text,['은퇴','노후','연금']))s+=p.pensionScore*((p.category==='연금보험'||p.category==='저축보험')?0.36:0.14);
- if(has(text,['부모','간병','치매']))s+=p.careScore*((p.category==='간병보험'||p.category==='치매보험')?0.38:0.13);
+ if(has(text,['은퇴','노후','연금']))s+=p.pensionScore*((['연금보험','연금저축보험','저축보험','변액저축보험','변액연금보험'].includes(p.category)?0.36:0.14));
+ if(has(text,['부모','간병','치매']))s+=p.careScore*(p.category==='간병/치매보험'?0.38:0.13);
  if(has(text,['상속','자산','증여','법인대표']))s+=p.deathScore*(p.category==='종신보험'?0.32:0.10)+p.refundScore*0.08;
  if(c.premiumSensitivity==='높음'||has(text,['보험료 부담','저렴','절감']))s+=p.priceScore*(p.category==='정기보험'?0.28:0.14);
  if(onlySilson)s+=(p.healthScore+p.criticalScore+p.deathScore)*.07;
