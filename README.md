@@ -107,3 +107,8 @@ npm run lint
 엑셀 원천에 정량 점수가 없다는 전제에서 `src/utils/productScoring.ts`가 키워드 기반 mock scoring을 생성합니다. 예를 들어 사망/종신/정기/상속 키워드는 `deathProtection`, 암/항암/유사암 키워드는 `cancerProtection`, 간병/치매/LTC 키워드는 `nursingCare`, 연금/저축/적립 키워드는 `pension`, `savings`, `refundCompetitiveness`에 반영됩니다.
 
 한화생명 상품은 `consultingUsability`와 `hanwhaStrategicFit`에 소폭 가중치를 주지만, 추천 엔진에서는 고객 니즈와 상품군 적합도를 함께 계산하므로 타사 상품이 더 적합하면 상위 추천이 가능합니다. 모든 상품에는 공통 주의사항으로 “실제 가입 전 상품설명서와 약관 확인 필요” 문구를 포함합니다.
+
+## 17. GitHub Pages 재배포 체크
+GitHub Pages에서 흰 화면이 보이는 가장 흔한 원인은 배포 브랜치/환경 보호 규칙 또는 정적 asset 경로 문제입니다. 이 프로젝트는 Vite `base`를 `./`로 고정해 `https://<owner>.github.io/<repo>/` 같은 project page와 custom domain/root page 모두에서 JS/CSS asset을 상대 경로로 로드하도록 했습니다.
+
+`npm run build`는 `dist/index.html`뿐 아니라 GitHub Pages SPA fallback용 `dist/404.html`과 Jekyll 비활성화용 `dist/.nojekyll`도 함께 준비합니다. GitHub 저장소에서는 **Settings → Pages → Source: GitHub Actions**로 설정하고, 현재 PR을 `main` 또는 `master`에 병합한 뒤 Actions의 `Deploy to GitHub Pages`가 성공했는지 확인하세요. 작업 브랜치에서는 환경 보호 규칙 때문에 Pages 배포가 거절될 수 있습니다.
