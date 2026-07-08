@@ -1,0 +1,5 @@
+export type ProductCategory='종신보험'|'정기보험'|'건강보험'|'암보험'|'간병보험'|'치매보험'|'연금보험'|'저축보험'|'어린이보험'|'운전자보험';
+export type Insurer='한화생명'|'삼성생명'|'교보생명'|'신한라이프'|'동양생명'|'미래에셋생명'|'ABL생명'|'DB생명';
+export type Product={id:string;insurer:Insurer;name:string;category:ProductCategory;summary:string;monthlyPremium:number;ageRange:string;paymentPeriod:string;coveragePeriod:string;deathScore:number;healthScore:number;criticalScore:number;careScore:number;pensionScore:number;refundScore:number;priceScore:number;waiverScore:number;clarityScore:number;consultingScore:number;hanwhaStrategic:boolean;strengths:string[];weaknesses:string[];recommendedFor:string[];talkingPoints:string[];differentiator:string};
+
+export type ProductResearch={id:string;company:string;productName:string;category:string;sourceType:'official'|'disclosure'|'pdf'|'news'|'mock';sourceName:string;sourceUrl:string;researchedAt:string;summary:string;keyFeatures:string[];coverageKeywords:string[];premiumKeywords:string[];refundKeywords:string[];waiverKeywords:string[];pensionKeywords:string[];targetCustomers:string[];salesPoints:string[];cautions:string[];isHanwhaProduct:boolean;confidenceScore:number};
