@@ -60,3 +60,31 @@ npm run lint
 - 상품 개정 시 비교 기준 자동 업데이트
 
 > 본 프로젝트의 데이터는 모두 시연용 예시 데이터이며 실제 판매자료가 아닙니다.
+
+## 11. 클라우드 배포 방법
+
+### GitHub Pages 자동 배포
+이 저장소에는 `.github/workflows/deploy-github-pages.yml` 워크플로가 포함되어 있습니다. `main` 또는 `master` 브랜치에 push하면 GitHub Actions가 자동으로 다음 과정을 실행합니다.
+
+1. `npm ci`로 의존성 설치
+2. `npm run build`로 `dist/` 생성
+3. `dist/`를 GitHub Pages artifact로 업로드
+4. GitHub Pages에 배포
+
+GitHub 저장소에서 최초 1회만 **Settings → Pages → Build and deployment → Source: GitHub Actions**로 설정하면 됩니다.
+
+### Vercel 자동 배포
+이 저장소에는 `vercel.json`이 포함되어 있어 Vercel에서 프로젝트를 import하면 자동으로 다음 설정을 사용합니다.
+
+- Framework: Vite
+- Install Command: `npm ci`
+- Build Command: `npm run build`
+- Output Directory: `dist`
+
+Vercel에서는 GitHub 저장소를 연결한 뒤 기본값 그대로 Deploy를 누르면 됩니다.
+
+### 로컬에서 배포 결과 미리보기
+```bash
+npm run build
+npm run preview
+```
