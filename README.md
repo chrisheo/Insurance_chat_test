@@ -68,7 +68,13 @@ npm run lint
 
 ## 13. 클라우드 배포 방법
 ### GitHub Pages
-`.github/workflows/deploy-github-pages.yml` 워크플로가 `main` 또는 `master` 브랜치 push 시 `npm ci`, `npm run build`, Pages artifact 업로드를 자동 실행합니다. GitHub 저장소에서 **Settings → Pages → Source: GitHub Actions**를 선택하세요.
+`.github/workflows/deploy-github-pages.yml` 워크플로가 브랜치 push 시 `npm ci`, `npm run build`, Pages artifact 업로드를 자동 실행합니다. GitHub 저장소에서 **Settings → Pages → Source: GitHub Actions**를 선택하세요.
 
 ### Vercel
 `vercel.json`에 Vite 배포 설정이 포함되어 있습니다. Vercel에서 GitHub 저장소를 import한 뒤 기본값으로 Deploy하면 됩니다.
+
+### GitHub Pages에서 화면이 안 보일 때 체크리스트
+1. GitHub 저장소의 **Settings → Pages → Source**가 `GitHub Actions`로 되어 있어야 합니다.
+2. 이 워크플로는 모든 브랜치 push에서 실행되도록 설정되어 있으므로, 현재 작업 브랜치를 push한 뒤 Actions 탭에서 `Deploy to GitHub Pages`가 성공했는지 확인합니다.
+3. Vite는 GitHub Actions 환경에서 자동으로 `/<repository-name>/` base path를 사용합니다. 예: `https://<owner>.github.io/Insurance_chat_test/`.
+4. 배포 URL은 Actions 실행 결과의 `github-pages` environment URL에서 확인합니다.
