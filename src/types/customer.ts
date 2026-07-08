@@ -1,0 +1,2 @@
+export type Customer={id:string;name:string;age:number;gender:'남성'|'여성';job:string;maritalStatus:string;family:string;hasChildren:boolean;monthlyIncome:number;monthlyPremium:number;existingPolicies:string[];healthIssues:string[];recentEvents:string[];interests:string[];premiumSensitivity:'낮음'|'보통'|'높음';consultingScore:number;memo:string};
+export type NeedScore={key:string;label:string;score:number;description:string};
