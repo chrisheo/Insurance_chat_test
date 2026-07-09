@@ -107,17 +107,3 @@ npm run lint
 엑셀 원천에 정량 점수가 없다는 전제에서 `src/utils/productScoring.ts`가 키워드 기반 mock scoring을 생성합니다. 예를 들어 사망/종신/정기/상속 키워드는 `deathProtection`, 암/항암/유사암 키워드는 `cancerProtection`, 간병/치매/LTC 키워드는 `nursingCare`, 연금/저축/적립 키워드는 `pension`, `savings`, `refundCompetitiveness`에 반영됩니다.
 
 한화생명 상품은 `consultingUsability`와 `hanwhaStrategicFit`에 소폭 가중치를 주지만, 추천 엔진에서는 고객 니즈와 상품군 적합도를 함께 계산하므로 타사 상품이 더 적합하면 상위 추천이 가능합니다. 모든 상품에는 공통 주의사항으로 “실제 가입 전 상품설명서와 약관 확인 필요” 문구를 포함합니다.
-
-## 17. GitHub Pages 재배포 체크
-GitHub Pages에서 흰 화면이 보이는 가장 흔한 원인은 배포 브랜치/환경 보호 규칙 또는 정적 asset 경로 문제입니다. 이 프로젝트는 Vite `base`를 `./`로 고정해 `https://<owner>.github.io/<repo>/` 같은 project page와 custom domain/root page 모두에서 JS/CSS asset을 상대 경로로 로드하도록 했습니다.
-
-`npm run build`는 `dist/index.html`뿐 아니라 GitHub Pages SPA fallback용 `dist/404.html`과 Jekyll 비활성화용 `dist/.nojekyll`도 함께 준비합니다. GitHub 저장소에서는 **Settings → Pages → Source: GitHub Actions**로 설정하고, 현재 PR을 `main` 또는 `master`에 병합한 뒤 Actions의 `Deploy to GitHub Pages`가 성공했는지 확인하세요. 작업 브랜치에서는 환경 보호 규칙 때문에 Pages 배포가 거절될 수 있습니다.
-
-## 18. 콘솔에 `/src/main.tsx` 404가 뜰 때
-`GET https://chrisheo.github.io/src/main.tsx 404`가 보이면 GitHub Pages가 Vite 빌드 결과물(`dist` 또는 `docs`)이 아니라 저장소 루트의 개발용 `index.html`을 그대로 서빙하고 있다는 뜻입니다. 브라우저에서 TypeScript entry인 `/src/main.tsx`를 직접 실행하려고 하므로 화면이 뜨지 않습니다.
-
-해결 방법은 둘 중 하나입니다.
-1. 권장: **Settings → Pages → Source: GitHub Actions**로 바꾸고, `main`/`master` 브랜치의 `Deploy to GitHub Pages` workflow 성공 후 제공되는 URL로 접속합니다.
-2. 브랜치 배포를 계속 쓸 경우: **Settings → Pages → Source: Deploy from a branch → Branch: main 또는 master → Folder: /docs**로 설정합니다. 이 저장소는 `npm run build:docs`로 생성한 정적 빌드 산출물을 `docs/`에 포함하므로 `/docs`를 선택하면 `/src/main.tsx` 404 없이 빌드된 JS/CSS가 로드됩니다.
-
-주의: Folder를 `/ (root)`로 두면 개발용 `index.html`이 배포되어 같은 404가 반복됩니다.
